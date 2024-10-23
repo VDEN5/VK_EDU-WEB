@@ -1,0 +1,34 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block title %}Вопрос - gfdgf{% endblock %}
+
+{% block content %}
+<div class="question">
+    <h2>jlkjtlgkje</h2>
+    <div class="tags">
+            <span class="badge badge-secondary">erjlgkjerlk</span>
+    </div>
+    <p>gn,angklnerlk</p>
+
+    <h3>Ответы:</h3>
+        <div class="media mb-4">
+            <img src="{% static 'main/img/Iam.jpg' %}" class="mr-3" alt="Аватар" width="64" height="64">
+            <div class="media-body">
+                <h5 class="mt-0">hfhfkjhjkjrlkjglk</h5>
+                <p>jfoerjgl</p>
+            </div>
+        </div>
+        <p>Нет ответов на этот вопрос.</p>
+
+    <!-- Пагинация ответов -->
+    <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">10</a></li>
+            </ul>
+        </nav>
+</div>
+{% endblock %}

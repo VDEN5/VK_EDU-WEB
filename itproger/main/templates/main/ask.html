@@ -1,0 +1,28 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Задать вопрос{% endblock %}
+
+{% block content %}
+<h2>Задать вопрос</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="title">Заголовок</label>
+        <input type="text" class="form-control {% if form.title.errors %}is-invalid{% endif %}" id="title" name="title" maxlength="200" required>
+        {% for error in form.title.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="form-group">
+        <label for="content">Содержание</label>
+        <textarea class="form-control {% if form.content.errors %}is-invalid{% endif %}" id="content" name="content" rows="5" maxlength="1000" required></textarea>
+        {% for error in form.content.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Отправить</button>
+</form>
+{% endblock %}

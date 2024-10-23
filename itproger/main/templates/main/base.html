@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Мой сайт{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'main/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
+</head>
+<body>
+    <!-- Шапка сайта -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/">Логотип</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Главная</a>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Поиск" aria-label="Поиск">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
+                </form>
+                <span class="navbar-text">
+                    Привет, раулармлоу <!-- Предполагается, что вы используете Django -->
+                </span>
+                <a class="nav-link" href="">Выйти</a> <!-- Замените на правильный URL для выхода -->
+            </div>
+        </nav>
+    </header>
+
+    <!-- Основное содержимое -->
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-9">
+                {% block content %}{% endblock %}
+            </div>
+            <div class="col-md-3">
+                <!-- Блок авторизованного пользователя -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Пользователь</h5>
+                        <p class="card-text">Привет,ппопо </p>
+                    </div>
+                </div>
+
+                <!-- Поисковая строка -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Поиск</h5>
+                        <form class="form-inline">
+                            <input class="form-control mr-sm-2" type="search" placeholder="Поиск" aria-label="Поиск">
+                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Блок справа 1 -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        **Блок справа 1**
+                    </div>
+                </div>
+
+                <!-- Блок справа 2 -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        **Блок справа 2**
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подвал сайта -->
+    <footer class="bg-light text-center py-3 mt-4">
+        <p>© 2023 Мой сайт. Все права защищены.</p>
+    </footer>
+</body>
+</html>

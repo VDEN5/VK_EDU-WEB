@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой сайт</title>
+    <link rel="stylesheet" href="{% static 'main/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-center">Вход</h3>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="login-email">Email:</label>
+                                <input type="email" class="form-control" id="login-email" placeholder="Введите email" maxlength="100" required>
+                                <small id="email-error" class="form-text text-danger">Неверный формат email.</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="login-password">Пароль:</label>
+                                <input type="password" class="form-control" id="login-password" placeholder="Введите пароль" maxlength="100" required>
+                                <small id="password-error" class="form-text text-danger">Неверный пароль.</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Войти</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
