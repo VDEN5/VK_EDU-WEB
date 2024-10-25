@@ -1,34 +1,34 @@
 {% extends "main/base.html" %}
 {% load static %}
-{% block title %}Вопрос - gfdgf{% endblock %}
+{% block title %}Вопрос - {{ num }}{% endblock %}
 
 {% block content %}
-<div class="question">
-    <h2>jlkjtlgkje</h2>
-    <div class="tags">
-            <span class="badge badge-secondary">erjlgkjerlk</span>
-    </div>
-    <p>gn,angklnerlk</p>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm border-light">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title">Вопрос {{ num }}</h2>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ ask }}</p>
 
-    <h3>Ответы:</h3>
-        <div class="media mb-4">
-            <img src="{% static 'main/img/Iam.jpg' %}" class="mr-3" alt="Аватар" width="64" height="64">
-            <div class="media-body">
-                <h5 class="mt-0">hfhfkjhjkjrlkjglk</h5>
-                <p>jfoerjgl</p>
+                    <h3 class="mt-4">Ответы:</h3>
+
+                    {% for ans in answers %}
+                        <div class="media mb-4 border p-3 rounded">
+                            <img src="{% static 'main/img/Iam.jpg' %}" class="mr-3 rounded-circle" alt="Аватар" width="64" height="64">
+                            <div class="media-body">
+                                <h5 class="mt-0">{{ ans.author }}</h5>
+                                <p>{{ ans.ans_data }}</p>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>Нет ответов на этот вопрос.</p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-        <p>Нет ответов на этот вопрос.</p>
-
-    <!-- Пагинация ответов -->
-    <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">...</a></li>
-                <li class="page-item"><a class="page-link" href="#">10</a></li>
-            </ul>
-        </nav>
+    </div>
 </div>
 {% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+  <h1>{% block title1 %}Список вопросов{% endblock %}</h1>
+
+    {% for question in questions %}
+        <a class="btn btn-secondary" href="question/{{ forloop.counter0|add:page.start_index }}">
+        <div class="media mb-4">
+            <img src="{% static 'main/img/Iam.jpg' %}" class="mr-3" alt="Аватар" width="64" height="64">
+            <div class="media-body">
+                <h5 class="mt-0">{{question.author}}</h5>
+                <p>{{question.quest_data}}</p>
+                <div class="d-flex justify-content-between mt-2">
+                    <button class="btn btn-primary">👍 Лайк</button>
+                    <div>
+                        <span class="badge badge-secondary">Тэги:{% for tag in question.tags %} #тег{{tag}} {% endfor %}</span>
+                        <span class="badge badge-info">Ответов: {{question.nums_of_answers}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </a>
+    {% endfor %}
+{% if paginator.num_pages > 1 %}
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        {% if page.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ page.previous_page_number }}">Предыдущая</a></li>
+        {% endif %}
+
+        {% for num in paginator.page_range %}
+          <li class="page-item {% if page.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        {% endfor %}
+
+        {% if page.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ page.next_page_number }}">Следующая</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+{% endblock %}
+
