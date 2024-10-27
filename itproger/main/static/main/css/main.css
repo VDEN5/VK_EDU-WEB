@@ -4,3 +4,15 @@
   left: 0;
   width: 100%;
 }
+.form-inline-head {
+    display: flex;
+    align-items: center; /* выравнивание по центру по вертикали */
+}
+
+.form-control-head {
+    margin-right: 10px; /* добавляет отступ справа от поля ввода */
+}
+
+.btn-head {
+    margin-left: 5px; /* добавляет отступ слева от кнопки */
+}

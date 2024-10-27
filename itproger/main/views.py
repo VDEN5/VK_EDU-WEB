@@ -24,10 +24,14 @@ def tag(request,num):
     return render(request, 'main/tagquest.html', context=context1)
 def question(request,num):
     answers = []
-    for i in range(5):
+    for i in range(20):
         answers.append({"author": f"Автор {i + 1}", "tags": [i, i * 2],
                     "ans_data": "Текст ответа или поста. Здесь может быть много информации о чем-то интересном."})
-    return render(request,'main/question.html', context={'num': num,'answers':answers,'ask':'data ask'})
+    paginator = Paginator(answers, 5)  # Пагинация по 5 вопросов на страницу
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    return render(request,'main/question.html', context={'num': num,'answers':page.object_list,'ask':'data ask',
+                                                         'paginator':paginator,'page':page})
 def ask(request):
     return render(request,'main/ask.html')
 def login(request):
