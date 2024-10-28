@@ -1,10 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Question
+from .models import Question,paginate
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
-def index(request):
-    return render(request,'main/index.html')
 def about(request):
     return render(request,'main/about.html')
 def tag(request,num):
@@ -14,11 +12,11 @@ def tag(request,num):
         questions.append({"author": f"Автор {i + 1}", "tags": [tag, i * 2],
                           "quest_data": "Текст статьи или поста. Здесь может быть много информации о чем-то интересном.",
                           "nums_of_answers": i * 3})
-    paginator = Paginator(questions, 10)  # Пагинация по 5 вопросов на страницу
+    #paginator = Paginator(questions, 10)  # Пагинация по 5 вопросов на страницу
+    page = paginate(questions, request, per_page=10)
     page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
     context1 = {'questions': page.object_list,
-                'paginator': paginator,
+                'paginator': page.paginator,
                 'page': page,
                 'tag': tag}
     return render(request, 'main/tagquest.html', context=context1)
@@ -27,11 +25,10 @@ def question(request,num):
     for i in range(20):
         answers.append({"author": f"Автор {i + 1}", "tags": [i, i * 2],
                     "ans_data": "Текст ответа или поста. Здесь может быть много информации о чем-то интересном."})
-    paginator = Paginator(answers, 5)  # Пагинация по 5 вопросов на страницу
     page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
+    page = paginate(answers, request, per_page=10)
     return render(request,'main/question.html', context={'num': num,'answers':page.object_list,'ask':'data ask',
-                                                         'paginator':paginator,'page':page})
+                                                         'paginator':page.paginator,'page':page})
 def ask(request):
     return render(request,'main/ask.html')
 def login(request):
@@ -46,38 +43,24 @@ def hot(request):
         questions.append({"author": f"Автор {i + 1}", "tags": [i, i * 2],
                           "quest_data": "Текст статьи или поста. Здесь может быть много информации о чем-то интересном.",
                           "nums_of_answers": i * 3})
-    paginator = Paginator(questions, 5)  # Пагинация по 5 вопросов на страницу
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
+    page = paginate(questions, request, per_page=10)
     context1 = {'questions': page.object_list,
-                'paginator': paginator,
+                'paginator': page.paginator,
                 'page': page, }
     return render(request, 'main/hot.html', context=context1)
-def paginate(objects_list, request, per_page=10):
-    paginator = Paginator(objects_list, per_page)
-    page_number = request.GET.get('page')
 
-    try:
-        page = paginator.page(page_number)
-    except PageNotAnInteger:
-        page = paginator.page(1)
-    except EmptyPage:
-        page = paginator.page(paginator.num_pages)
-
-    return {
-        'page': page,
-        'paginator': paginator,
-    }
 def asa(request):
-    questions=[]
+    questions = []
     for i in range(50):
-        questions.append({"author":f"Автор {i+1}","tags":[i,i*2],
-                    "quest_data":"Текст статьи или поста. Здесь может быть много информации о чем-то интересном.",
-                    "nums_of_answers":i*3})
-    paginator = Paginator(questions, 10)  # Пагинация по 10 вопросов на страницу
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
+        questions.append({"author": f"Автор {i+1}", "tags": [i, i*2],
+                    "quest_data": "Текст статьи или поста. Здесь может быть много информации о чем-то интересном.",
+                    "nums_of_answers": i*3})
+
+    # Используем функцию paginate для пагинации
+    page = paginate(questions, request, per_page=10)
+
     context1 = {'questions': page.object_list,
-                'paginator': paginator,
+                'paginator': page.paginator,  # Доступ к paginator через page.paginator
                 'page': page, }
+
     return render(request, 'main/questions_list.html', context=context1)

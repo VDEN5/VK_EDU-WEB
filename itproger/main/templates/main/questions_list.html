@@ -4,7 +4,7 @@
   <h1>{% block title1 %}Список вопросов{% endblock %}</h1>
 
     {% for question in questions %}
-        <a class="btn btn-secondary mb-4" href="question/{{ forloop.counter0|add:page.start_index }}">
+        <a class="btn btn-secondary mb-4" href="{% url 'question' num=forloop.counter0|add:page.start_index %}">
         <div class="media mb-4">
             <img src="{% static 'main/img/Iam.jpg' %}" class="mr-3" alt="Аватар" width="64" height="64">
             <div class="media-body">
@@ -22,24 +22,6 @@
         </a>
     {% endfor %}
 
-    <div class="mt-4">
-        {% if paginator.num_pages > 1 %}
-            <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    {% if page.has_previous %}
-                        <li class="page-item"><a class="page-link" href="?page={{ page.previous_page_number }}">Предыдущая</a></li>
-                    {% endif %}
-
-                    {% for num in paginator.page_range %}
-                        <li class="page-item {% if page.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-                    {% endfor %}
-
-                    {% if page.has_next %}
-                        <li class="page-item"><a class="page-link" href="?page={{ page.next_page_number }}">Следующая</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% endif %}
-    </div>
+    {% include 'main/paginate.html' %}
 {% endblock %}
 
