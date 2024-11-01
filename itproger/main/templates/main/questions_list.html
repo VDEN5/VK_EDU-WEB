@@ -13,7 +13,7 @@
                 <div class="d-flex justify-content-between mt-2">
                     <button class="btn btn-primary">👍 Лайк</button>
                     <div>
-                        <span class="badge badge-secondary">Тэги:{% for tag in question.tags %} #тег{{tag}} {% endfor %}</span>
+                        <span class="badge badge-secondary">Тэги:{% for tag in question.tags %} #тег{{tag.name}} {% endfor %}</span>
                         <span class="badge badge-info">Ответов: {{question.nums_of_answers}}</span>
                     </div>
                 </div>

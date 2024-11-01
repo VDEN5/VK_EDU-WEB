@@ -1,6 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from .models import Question,paginate
+from .models import Question,paginate,Bestquests,Quests, QuestionLike,Newquests,Tags1
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
 def about(request):
@@ -8,10 +8,11 @@ def about(request):
 def tag(request,num):
     tag=num
     questions = []
-    for i in range(20):
-        questions.append({"author": f"Автор {i + 1}", "tags": [tag, i * 2],
-                          "quest_data": "Текст статьи или поста. Здесь может быть много информации о чем-то интересном.",
-                          "nums_of_answers": i * 3})
+    qw = Bestquests.get_all_quests()
+    for i in range(len(qw)):
+        questions.append({"author": f"Автор {qw[i].quest.author}", "tags": Tags1.get_all_tags_id(i),
+                          "quest_data": qw[i].quest.quest_data,
+                          "nums_of_answers": qw[i].quest.nums_of_answers})
     #paginator = Paginator(questions, 10)  # Пагинация по 5 вопросов на страницу
     page = paginate(questions, request, per_page=10)
     page_number = request.GET.get('page')
@@ -19,15 +20,17 @@ def tag(request,num):
                 'paginator': page.paginator,
                 'page': page,
                 'tag': tag}
+
     return render(request, 'main/tagquest.html', context=context1)
 def question(request,num):
     answers = []
-    for i in range(20):
-        answers.append({"author": f"Автор {i + 1}", "tags": [i, i * 2],
-                    "ans_data": "Текст ответа или поста. Здесь может быть много информации о чем-то интересном."})
+    qw=Quests.get_answers_by_quest_id(num)
+    for i in range(len(qw)):
+        answers.append({"author": f"Автор {qw[i].username}",
+                    "ans_data": qw[i].data})
     page_number = request.GET.get('page')
     page = paginate(answers, request, per_page=10)
-    return render(request,'main/question.html', context={'num': num,'answers':page.object_list,'ask':'data ask',
+    return render(request,'main/question.html', context={'num': num,'answers':page.object_list,'ask':Quests.get_all_quests_id(num).quest_data,
                                                          'paginator':page.paginator,'page':page})
 def ask(request):
     return render(request,'main/ask.html')
@@ -37,12 +40,19 @@ def signup(request):
     return render(request,'main/signup.html')
 def page(request,num):
     return render(request,'main/tagquest.html', context={'num': num})
+def like_question(request, question_id):
+  question = get_object_or_404(Question, pk=question_id)
+  if request.user.is_authenticated:
+      QuestionLike.objects.create(user=request.user, question=question)
+      # ... (логика обработки успешного лайка) ...
+  return redirect(question.get_absolute_url())
 def hot(request):
     questions = []
-    for i in range(20):
-        questions.append({"author": f"Автор {i + 1}", "tags": [i, i * 2],
-                          "quest_data": "Текст статьи или поста. Здесь может быть много информации о чем-то интересном.",
-                          "nums_of_answers": i * 3})
+    qw=Newquests.get_all_quests()
+    for i in range(len(qw)):
+        questions.append({"author": f"Автор {qw[i].quest.author}", "tags": Tags1.get_all_tags_id(i),
+                          "quest_data": qw[i].quest.quest_data,
+                          "nums_of_answers": qw[i].quest.nums_of_answers})
     page = paginate(questions, request, per_page=10)
     context1 = {'questions': page.object_list,
                 'paginator': page.paginator,
@@ -51,10 +61,11 @@ def hot(request):
 
 def asa(request):
     questions = []
-    for i in range(50):
-        questions.append({"author": f"Автор {i+1}", "tags": [i, i*2],
-                    "quest_data": "Текст статьи или поста. Здесь может быть много информации о чем-то интересном.",
-                    "nums_of_answers": i*3})
+    qw=Quests.get_all_quests()
+    for i in range(len(qw)):
+        questions.append({"author": f"Автор {qw[i].author}", "tags": Tags1.get_all_tags_id(i),
+                    "quest_data": qw[i].quest_data,
+                    "nums_of_answers": qw[i].nums_of_answers})
 
     # Используем функцию paginate для пагинации
     page = paginate(questions, request, per_page=10)
