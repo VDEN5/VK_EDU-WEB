@@ -16,6 +16,8 @@ class Question(models.Model):
 
     def __str__(self):
         return self.title
+
+
 class Quests(models.Model):
   author = models.CharField(max_length=50)
   quest_data = models.TextField()
@@ -77,9 +79,12 @@ class Quests(models.Model):
               )
               answers.append(answer)
           return answers
+
+
 class Tag(models.Model):
     name = models.CharField(max_length=50)
     quest=models.IntegerField()
+    #questmany = models.ManyToManyField(Quests, related_name='quest')
     @classmethod
     def get_all_tags_id(cls, id1):
         with connection.cursor() as cursor:
@@ -90,9 +95,13 @@ class Tag(models.Model):
                 name=row[1]
             )
             return qu
+
+
 class Tags1(models.Model):
     name = models.CharField(max_length=50)
     quest=models.ForeignKey(Quests, on_delete=models.CASCADE)
+    #jjh=models.CharField(default='fbjsb')
+    questmany = models.ManyToManyField(Quests,related_name='quest')
     @classmethod
     def get_all_tags_id(cls, id1):
         with connection.cursor() as cursor:
@@ -107,6 +116,28 @@ class Tags1(models.Model):
             )
                 bests.append(best)
             return bests
+
+    @classmethod
+    def get_all_tags_by_quest_id(cls, id1):
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM main_tags1_questmany WHERE quests_id = %s", [id1])
+            rows = cursor.fetchall()
+            bests = []
+            for row in rows:
+                bests.append(row[1])
+            return bests
+
+    @classmethod
+    def get_all_quest_by_tag_id(cls, id1):
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM main_tags1_questmany WHERE tag_id = %s", [id1])
+            rows = cursor.fetchall()
+            bests = []
+            for row in rows:
+                bests.append(row[2])
+            return bests
+
+
 class Answer(models.Model):
     username = models.CharField(max_length=50)
     data = models.TextField(default="def")
@@ -124,6 +155,8 @@ class Answer(models.Model):
                 quest=Quests.get_all_quests_id(row[3])
             )
             return qu
+
+
 class Bestquests(models.Model):
     place=models.IntegerField(default=0)
     quest=models.ForeignKey(Quests,on_delete=models.CASCADE)
@@ -142,6 +175,8 @@ class Bestquests(models.Model):
                 )
                 bests.append(best)
             return bests
+
+
 class Newquests(models.Model):
     place=models.IntegerField(default=0)
     quest=models.ForeignKey(Quests,on_delete=models.CASCADE)
@@ -160,30 +195,24 @@ class Newquests(models.Model):
                 )
                 news.append(new)
             return news
+
+
 class QuestionLike(models.Model):
   user = models.ForeignKey(User, on_delete=models.CASCADE)
   question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
   class Meta:
     unique_together = ('user', 'question') # Ограничение на уровне базы данных
+
+
 class AnswerLike(models.Model):
   user = models.ForeignKey(User, on_delete=models.CASCADE)
   answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
 
   class Meta:
     unique_together = ('user', 'answer') # Ограничение на уровне базы данных
-def paginate(objects_list, request, per_page=10):
-    paginator = Paginator(objects_list, per_page)
-    page_number = request.GET.get('page')
 
-    try:
-        page = paginator.page(page_number)
-    except PageNotAnInteger:
-        page = paginator.page(1)
-    except EmptyPage:
-        page = paginator.page(paginator.num_pages)
 
-    return page
 class Profile(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     avatar=models.ImageField(null=True,blank=True)

@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'itproger.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'aa',
+        'NAME': 'ss1',
         "USER": 'postgres',
         'PASSWORD': 'vden2005',
         'HOST': '127.0.0.1',

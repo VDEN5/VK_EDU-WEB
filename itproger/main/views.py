@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from .models import Question,paginate,Bestquests,Quests, QuestionLike,Newquests,Tags1
+from .models import Question,Bestquests,Quests, QuestionLike,Newquests,Tags1
+from .utils import paginate
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
 def about(request):
@@ -60,6 +61,7 @@ def hot(request):
     return render(request, 'main/hot.html', context=context1)
 
 def asa(request):
+    print(Tags1.get_all_tags_by_quest_id(2))
     questions = []
     qw=Quests.get_all_quests()
     for i in range(len(qw)):
