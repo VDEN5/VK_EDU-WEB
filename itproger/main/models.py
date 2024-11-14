@@ -7,15 +7,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.models import User
 # Create your models here.
 # ВАЖНО!!!: я не могу пользоваться расширением objects, поэтому пользуюсь query
-class Question(models.Model):
-    title = models.CharField(max_length=200)
-    body = models.TextField()
-    tags = models.CharField(max_length=100)
-    likes = models.IntegerField(default=0)
-    answer_count = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.title
 
 
 class Quests(models.Model):
@@ -80,22 +71,13 @@ class Quests(models.Model):
               answers.append(answer)
           return answers
 
-
-class Tag(models.Model):
-    name = models.CharField(max_length=50)
-    quest=models.IntegerField()
-    #questmany = models.ManyToManyField(Quests, related_name='quest')
+class QuestsManager(models.Manager):
     @classmethod
-    def get_all_tags_id(cls, id1):
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM main_tags1 WHERE id = %s", [id1])
-            row = cursor.fetchone()
-            qu = Tag(
-                id=row[0],
-                name=row[1]
-            )
-            return qu
-
+    def get_best(self):
+        return Quests.get_all_quests()[::5]
+    @classmethod
+    def get_hot(self):
+        return Quests.get_all_quests()[-20:]
 
 class Tags1(models.Model):
     name = models.CharField(max_length=50)
@@ -157,49 +139,11 @@ class Answer(models.Model):
             return qu
 
 
-class Bestquests(models.Model):
-    place=models.IntegerField(default=0)
-    quest=models.ForeignKey(Quests,on_delete=models.CASCADE)
-
-    @classmethod
-    def get_all_quests(cls):
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM main_bestquests")
-            rows = cursor.fetchall()
-            bests = []
-            for row in rows:
-                best = Bestquests(
-                    id=row[0],
-                    place=row[1],
-                    quest=Quests.get_all_quests_id(row[2])#row[2]
-                )
-                bests.append(best)
-            return bests
-
-
-class Newquests(models.Model):
-    place=models.IntegerField(default=0)
-    quest=models.ForeignKey(Quests,on_delete=models.CASCADE)
-
-    @classmethod
-    def get_all_quests(cls):
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM main_newquests")
-            rows = cursor.fetchall()
-            news = []
-            for row in rows:
-                new = Newquests(
-                    id=row[0],
-                    place=row[1],
-                    quest=Quests.get_all_quests_id(row[2])#row[2]
-                )
-                news.append(new)
-            return news
 
 
 class QuestionLike(models.Model):
   user = models.ForeignKey(User, on_delete=models.CASCADE)
-  question = models.ForeignKey(Question, on_delete=models.CASCADE)
+  question = models.ForeignKey(Quests, on_delete=models.CASCADE)
 
   class Meta:
     unique_together = ('user', 'question') # Ограничение на уровне базы данных
