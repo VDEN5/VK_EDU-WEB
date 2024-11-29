@@ -1,0 +1,16 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Задать вопрос{% endblock %}
+
+{% block content %}
+<h2>Задать вопрос</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if form.errors %}
+        <p style="color: red;">{{ form.errors }}</p>
+    {% endif %}
+    <button type="submit">Сохранить изменения</button>
+</form>
+{% endblock %}

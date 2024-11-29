@@ -12,6 +12,20 @@
                 </div>
                 <div class="card-body">
                     <p class="card-text">{{ ask }}</p>
+                    <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+                        {% if errors %}
+        <ul>
+            {% for field, error_list in errors.items %}
+                {% for error in error_list %}
+                    <li>{{ field }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <button type="submit">Задать</button>
+</form>
 
                     <h3 class="mt-4">Ответы:</h3>
 
@@ -26,6 +40,7 @@
                     {% empty %}
                         <p>Нет ответов на этот вопрос.</p>
                     {% endfor %}
+                    <div id="new_answer"></div> {## Якорь для прокрутки ##}
                     {% include 'main/paginate.html' %}
                 </div>
             </div>

@@ -2,7 +2,14 @@
 {% load static %}
 {% block content %}
   <h1>{% block title1 %}Список вопросов{% endblock %}</h1>
-
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if form.errors %}
+        <p style="color: red;">{{ form.errors }}</p>
+    {% endif %}
+    <button type="submit">Задать</button>
+</form>
     {% for question in questions %}
         <a class="btn btn-secondary mb-4" href="{% url 'question' num=forloop.counter0|add:page.start_index %}">
         <div class="media mb-4">

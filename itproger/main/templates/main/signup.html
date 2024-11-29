@@ -17,24 +17,14 @@
                         <h3 class="text-center">Регистрация</h3>
                     </div>
                     <div class="card-body">
-                        <form>
-                            <div class="form-group">
-                                <label for="signup-email">Email:</label>
-                                <input type="email" class="form-control" id="signup-email" placeholder="Введите email" maxlength="100" required>
-                                <small id="email-error" class="form-text text-danger">Неверный формат email.</small>
-                            </div>
-                            <div class="form-group">
-                                <label for="signup-password">Пароль:</label>
-                                <input type="password" class="form-control" id="signup-password" placeholder="Введите пароль" maxlength="100" required>
-                                <small id="password-error" class="form-text text-danger">Пароль должен быть не менее 8 символов.</small>
-                            </div>
-                            <div class="form-group">
-                                <label for="signup-confirm-password">Подтверждение пароля:</label>
-                                <input type="password" class="form-control" id="signup-confirm-password" placeholder="Повторите пароль" maxlength="100" required>
-                                <small id="confirm-password-error" class="form-text text-danger">Пароли не совпадают.</small>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
-                        </form>
+                        <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+                            {% if form.errors %}
+        <p style="color: red;">{{ form.errors }}</p>
+    {% endif %}
+        <button type="submit">Войти</button>
+    </form>
                     </div>
                 </div>
             </div>

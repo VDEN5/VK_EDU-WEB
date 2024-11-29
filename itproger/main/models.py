@@ -1,3 +1,4 @@
+import json
 from symtable import Class
 
 from django.db import models,connection
@@ -15,6 +16,14 @@ class Quests(models.Model):
   nums_of_answers = models.IntegerField(default=0)
   tags = models.JSONField(default=list) # Используем JSONField для хранения массива
   #answers = models.ForeignKey(Answer, on_delete=models.CASCADE)
+
+  @classmethod
+  def add_quest_id(cls, author,data,tags):
+      with connection.cursor() as cursor:
+          cursor.execute(
+              "INSERT INTO main_quests (author, quest_data, nums_of_answers, tags) VALUES (%s, %s, %s, %s)",
+              (author,data,0,json.dumps(tags))
+          )
 
   @classmethod
   def get_all_quests_id(cls, id1):
@@ -124,6 +133,14 @@ class Answer(models.Model):
     username = models.CharField(max_length=50)
     data = models.TextField(default="def")
     quest = models.ForeignKey(Quests, on_delete=models.CASCADE, related_name='answers')  # Связь с Quests
+
+    @classmethod
+    def add_ans_id(cls, author, data, id1):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO main_answer (username, data, quest_id) VALUES (%s, %s, %s)",
+                (author, data, id1)
+            )
 
     @classmethod
     def get_all_ans_id(cls, id1):

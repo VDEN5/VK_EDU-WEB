@@ -23,10 +23,14 @@
     <input class="form-control-head mr-sm-2" type="search" placeholder="Поиск" aria-label="Поиск">
     <button class="btn-head btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
 </form>
+                {% if username is not None %}
                 <span class="navbar-text">
-                    Привет, раулармлоу <!-- Предполагается, что вы используете Django -->
+                    Привет, {{username}} <!-- Предполагается, что вы используете Django -->
                 </span>
-                <a class="nav-link" href="">Выйти</a> <!-- Замените на правильный URL для выхода -->
+                <a class="nav-link"  href="/logout">Выйти</a> <!-- Замените на правильный URL для выхода -->
+                <a class="nav-link"  href="/edit">Выйти</a>
+                <a class="nav-link"  href="/login?continue={{ request.path }}">Выйти</a>
+                {% endif %}
             </div>
         </nav>
     </header>
