@@ -28,8 +28,9 @@
                     Привет, {{username}} <!-- Предполагается, что вы используете Django -->
                 </span>
                 <a class="nav-link"  href="/logout">Выйти</a> <!-- Замените на правильный URL для выхода -->
-                <a class="nav-link"  href="/edit">Выйти</a>
-                <a class="nav-link"  href="/login?continue={{ request.path }}">Выйти</a>
+                <a class="nav-link"  href="/edit">Изменить профиль</a>
+                {% else %}
+                <a class="nav-link"  href="/login?continue={{ request.path }}">Войти</a>
                 {% endif %}
             </div>
         </nav>
@@ -46,7 +47,7 @@
                 <div class="card mb-3">
                     <div class="card-body">
                         <h5 class="card-title">Пользователь</h5>
-                        <p class="card-text">Привет,ппопо </p>
+                        <p class="card-text">Привет, {{username}} </p>
                     </div>
                 </div>
 
