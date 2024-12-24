@@ -9,7 +9,15 @@ from django.contrib.auth.models import User
 # Create your models here.
 # ВАЖНО!!!: я не могу пользоваться расширением objects, поэтому пользуюсь query
 
+class Image(models.Model):
+    image = models.ImageField(upload_to='images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f'Image hgdgf'
+class ImageManager(models.Manager):
+    def recent_images(self):
+        return self.order_by('-uploaded_at')[:10]
 class Quests(models.Model):
   author = models.CharField(max_length=50)
   quest_data = models.TextField()
@@ -156,19 +164,38 @@ class Answer(models.Model):
             return qu
 
 
-
+class QuestionLikeManager(models.Manager):
+    def toggle_like(self, user, question):
+        like = self.filter(user=user, question=question).first()
+        if like:
+            like.delete()
+            return False
+        else:
+            self.create(user=user, question=question)
+            return True
 
 class QuestionLike(models.Model):
   user = models.ForeignKey(User, on_delete=models.CASCADE)
   question = models.ForeignKey(Quests, on_delete=models.CASCADE)
+  objects = QuestionLikeManager()
 
   class Meta:
     unique_together = ('user', 'question') # Ограничение на уровне базы данных
 
+class AnswerLikeManager(models.Manager):
+    def toggle_like(self, user, answer):
+        like = self.filter(user=user, answer=answer).first()
+        if like:
+            like.delete()
+            return False
+        else:
+            self.create(user=user, answer=answer)
+            return True
 
 class AnswerLike(models.Model):
   user = models.ForeignKey(User, on_delete=models.CASCADE)
   answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+  objects = AnswerLikeManager()
 
   class Meta:
     unique_together = ('user', 'answer') # Ограничение на уровне базы данных
@@ -176,4 +203,12 @@ class AnswerLike(models.Model):
 
 class Profile(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
-    avatar=models.ImageField(null=True,blank=True)
+    #avatar=models.ImageField(null=True,blank=True)
+    avatar = models.ImageField(upload_to='img/avatars/')
+class Vote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Quests, on_delete=models.CASCADE, related_name='votes')
+    vote_type = models.CharField(max_length=10, choices=[('like', 'Like'), ('dislike', 'Dislike')])
+    # уникальность голосов
+    class Meta:
+      unique_together = ('user', 'question')

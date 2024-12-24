@@ -1,18 +1,41 @@
 from idlelib.iomenu import errors
 from lib2to3.fixes.fix_input import context
+import json
+from urllib.parse import urlparse
 
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render, redirect, get_object_or_404,HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponse
 from django.db import connection
-from .models import Quests, QuestionLike, Tags1, QuestsManager, Answer
+from .models import Quests, QuestionLike, Tags1, QuestsManager, Answer, Image, Vote, AnswerLike
 from .utils import paginate
-from .forms import UserForm, LoginForm, QuestForm, AnsForm
+from .forms import UserForm, LoginForm, QuestForm, AnsForm, ImageUploadForm
 from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
+def upload_image(request):
+    if request.method == 'POST':
+        form = ImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('upload_image')
+    else:
+        form = ImageUploadForm()
+
+    # Выполняем сырой SQL-запрос для получения последних 10 изображений
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT * FROM main_image')
+        images = cursor.fetchall()  # Получаем все результаты
+    print(images[0])
+
+    return render(request, 'main/upload.html', {'form': form, 'images': images})
 def about(request):
     return render(request,'main/about.html')
 def tag(request,num):
@@ -40,7 +63,15 @@ def question(request,num):
         form = AnsForm(request.POST)
         if form.is_valid():
             #question = form.save()
+            answer = form.save(commit=False)
+            answer.author_id = request.user.id
+            answer.question_id = question.id
+            answer.save()
             Answer.add_ans_id(username,form['data'].data,num)
+            answers = Answer.objects.for_question(question)
+            answer_index = list(answers).index(answer) + 1
+            page = (answer_index - 1) // page_answers.paginator.per_page + 1
+            return redirect(f"{request.path}?page={page}#answer-{answer.id}")
             return redirect('/question/'+str(num)+'?page=2024#new_answer')#вместо 2024 можно поставить число страниц, но дольше работать будет
         err=form.errors
     else:
@@ -55,7 +86,7 @@ def question(request,num):
     return render(request,'main/question.html', context={'num': num,'answers':page.object_list,'ask':Quests.get_all_quests_id(num).quest_data,
                                                          'paginator':page.paginator,'page':page,'username':request.session.get('username'),
                                                          'form': form,
-                                                         'errors':err,})
+                                                         'errors':err,'is_author': request.user == Quests.author})
 def ask(request):
     return render(request,'main/ask.html',context={'username':request.session.get('username'),})
 def login1(request):
@@ -63,17 +94,24 @@ def login1(request):
     next_url = request.GET.get('continue')  # Получаем параметр continue
     if next_url is None:
         next_url='/'
-    form = LoginForm
+    form = LoginForm()
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
             user = authenticate(request, **form.cleaned_data)
             if user:
+                redirect_url = form.cleaned_data.get('next')
+                if redirect_url:
+                    parsed_url = urlparse(redirect_url)
+                    if parsed_url.netloc in ('', 'localhost'):
+                        return redirect(redirect_url)
                 login(request, user)
                 request.session['username'] = user.username
                 return redirect(next_url)
                 #return redirect(reverse('profile.edit'))
             form.add_error('password', 'Invalid username or password.')
+        if 'next' in request.GET:
+            form.fields['next'].initial = request.GET['next']
     return render(request, 'main/login.html', {'form': form})
 
 @login_required
@@ -162,3 +200,43 @@ def edit_profile(request):
     else:
         form = UserForm(instance=request.user)
     return render(request, 'main/edit_profile.html', {'form': form})
+
+
+@login_required
+def like_question(request):
+    id = request.POST.get('question_id')
+    question = get_object_or_404(Quests, pk=id)
+    QuestionLike.objects.toggle_like(user=request.user, question=question)
+    count = question.get_likes_count()
+    return JsonResponse({
+        'count': count
+    })
+
+
+@login_required
+def like_answer(request):
+    id = request.POST.get('answer_id')
+    answer = get_object_or_404(Answer, pk=id)
+    AnswerLike.objects.toggle_like(user=request.user, answer=answer)
+    count = answer.get_likes_count()
+    return JsonResponse({
+        'count': count
+    })
+
+
+@login_required
+def update_answer(request):
+    if request.method == 'POST':
+        answer_id = request.POST.get('answer_id')
+        is_correct = request.POST.get('is_correct') == 'true'
+
+        try:
+            answer = Answer.objects.get(id=answer_id)
+            if request.user == answer.question.author:
+                answer.is_correct = is_correct
+                answer.save()
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'error': 'Not the author'})
+        except Answer.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Answer not found'})

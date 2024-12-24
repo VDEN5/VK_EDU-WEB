@@ -2,13 +2,18 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
-from .models import Quests, Answer
+from .models import Quests, Answer, Image, Profile
 
-
+class ImageUploadForm(forms.ModelForm):
+    class Meta:
+        model = Image
+        fields = ['image']
 class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
     confirm = forms.BooleanField(widget=forms.CheckboxInput)
+    next = forms.CharField(widget=forms.HiddenInput(), required=False)
+
 
     def clean_username(self):
         return self.cleaned_data['username'].lower().strip()
@@ -50,5 +55,11 @@ class UserForm(forms.ModelForm):
         user.set_password(self.cleaned_data['password'])
 
         user.save()
+        ava = self.cleaned_data.get('avatar')
+
+        if ava:
+            Profile.objects.create(user=user, avatar=ava)
+        else:
+            Profile.objects.create(user=user)
 
         return user

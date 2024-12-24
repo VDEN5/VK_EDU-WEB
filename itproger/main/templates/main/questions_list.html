@@ -13,13 +13,22 @@
     {% for question in questions %}
         <a class="btn btn-secondary mb-4" href="{% url 'question' num=forloop.counter0|add:page.start_index %}">
         <div class="media mb-4">
-            <img src="{% static 'main/img/Iam.jpg' %}" class="mr-3" alt="Аватар" width="64" height="64">
             <div class="media-body">
                 <h5 class="mt-0">{{question.author}}</h5>
                 <p>{{question.quest_data}}</p>
-                <div class="d-flex justify-content-between mt-2">
-                    <button class="btn btn-primary">👍 Лайк</button>
-                    <div>
+                <div class="question-like-section d-flex justify-content-center align-items-center gap-1">
+                <div
+                    class="border rounded px-2 py-1 d-flex justify-content-center align-items-center"
+                    style="min-width: 1.5rem; height: 1.8rem; font-size: 0.875rem;"
+                >
+                </div>
+
+                <button
+                    id="upButton"
+                    class="btn btn-success btn-sm"
+                    data-id="{{ question.id }}"
+                >&#128077;</button>
+            </div>
                         <span class="badge badge-secondary">Тэги:{% for tag in question.tags %} #тег{{tag.name}} {% endfor %}</span>
                         <span class="badge badge-info">Ответов: {{question.nums_of_answers}}</span>
                     </div>
@@ -31,4 +40,3 @@
 
     {% include 'main/paginate.html' %}
 {% endblock %}
-
