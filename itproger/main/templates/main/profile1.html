@@ -1,0 +1,17 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Задать вопрос{% endblock %}
+
+{% block content %}
+<h1>Профиль</h1>
+{% if user.userprofile.avatar %}
+    <img src="{{ MEDIA_URL }}{{ user.userprofile.avatar }}" alt="Аватар">
+{% else %}
+    <p>Аватар не загружен.</p>
+{% endif %}
+<a href="{% url 'edit_profile' %}">Редактировать профиль</a>
+
+
+
+{% endblock %}
